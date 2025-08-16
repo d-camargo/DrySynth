@@ -3,7 +3,7 @@
 #include "dht.h"
 #include <math.h>
 
-// ===== Configurações de hardware =====
+// ===== Hardware =====
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 dht DHT;
 
@@ -13,19 +13,28 @@ dht DHT;
 #define FAN_PIN    5
 #define DHTPIN     A2
 
-// Limites de histerese por modo
-const float T_SECA_LIGA     = 37.0;
-const float T_SECA_DESLIGA  = 45.0;
+// Limites (histerese) por modo
+const float T_SECA_LIGA     = 35.0;
+const float T_SECA_DESLIGA  = 50.0;
 const float T_DORME_LIGA    = 28.0;
 const float T_DORME_DESLIGA = 40.0;
 const float T_VENT_LIGA     = 30.0;
 const float T_VENT_DESLIGA  = 50.0;
 
-// Modos de operação
+// Fan quando lâmpada está DESLIGADA:
+// use 0 para OFF total, ou um valor baixo (ex.: 35) para circulação mínima
+const uint8_t FAN_IDLE_PWM  = 30;
+
+// Filtro de salto máximo
+const float  MAX_SALTO       = 3.0;   // °C
+static float tempValida      = 0.0;
+static bool  primeiraLeitura = true;
+
+// Modos
 enum Mode { SECAGEM, ECONOMIA, VENTILA };
 Mode modoAtual = SECAGEM;
 
-// Estado da lâmpada (começa acesa)
+// Estado da lâmpada (HIGH = relé fechado = lâmpada ON)
 bool lampadaLigada = true;
 
 // Debounce simples
@@ -40,6 +49,13 @@ bool botaoApertado(int pin) {
   return false;
 }
 
+// PWM linear do fan: Tmin=20°C, Tmax depende do modo
+uint8_t calcFanSpeed(float temp, float tMax) {
+  if (temp <= 20.0) return 0;
+  if (temp >= tMax)  return 255;
+  return (uint8_t)((temp - 20.0) * 255.0 / (tMax - 20.0));
+}
+
 void setup() {
   Wire.begin();
   lcd.init();
@@ -52,10 +68,8 @@ void setup() {
   delay(3000);
   lcd.clear();
 
-  // Configura pinos
   pinMode(RELE_PIN, OUTPUT);
-  // HIGH = relé fechado = lâmpada ON
-  digitalWrite(RELE_PIN, HIGH);
+  digitalWrite(RELE_PIN, HIGH);   // HIGH = lâmpada ON (começa acesa)
 
   pinMode(FAN_PIN, OUTPUT);
   analogWrite(FAN_PIN, 0);
@@ -64,7 +78,7 @@ void setup() {
 }
 
 void loop() {
-  // 1) alterna modo no botão
+  // Alterna de modo no botão
   if (botaoApertado(BTN_TOGGLE)) {
     modoAtual = Mode((modoAtual + 1) % 3);
     lcd.clear();
@@ -75,15 +89,28 @@ void loop() {
     }
     delay(3000);
     lcd.clear();
-    // garante que a lâmpada volte a ser considerada acesa
-    lampadaLigada = true;
+
+    // recomeça com lâmpada acesa e aceita a 1ª leitura crua
+    lampadaLigada   = true;
     digitalWrite(RELE_PIN, HIGH);
+    primeiraLeitura = true;
   }
 
-  // 2) leitura do DHT22
+  // Leitura + filtro de salto
   DHT.read22(DHTPIN);
-  float temp    = DHT.temperature;
+  float tempRaw = DHT.temperature;
   float umidRel = DHT.humidity;
+
+  if (!isnan(tempRaw)) {
+    if (primeiraLeitura) {
+      tempValida = tempRaw;
+      primeiraLeitura = false;
+    } else if (fabs(tempRaw - tempValida) <= MAX_SALTO) {
+      tempValida = tempRaw;
+    }
+  }
+  float temp = tempValida;
+
   if (isnan(temp) || (modoAtual == SECAGEM && isnan(umidRel))) {
     lcd.clear();
     lcd.setCursor(0,0);
@@ -92,51 +119,36 @@ void loop() {
     return;
   }
 
-  // 3) cálculo da umidade absoluta
-  float es      = 6.112 * exp((17.67 * temp) / (temp + 243.5));
-  float e       = (umidRel / 100.0) * es;
-  float umidAbs = (216.7 * e) / (temp + 273.15);
+  // Umidade absoluta (g/m3)
+  float es      = 6.112 * exp((17.67 * temp)/(temp + 243.5));
+  float e       = (umidRel/100.0) * es;
+  float umidAbs = (216.7 * e)/(temp + 273.15);
 
-  // 4) controle da lâmpada (HIGH = ON) e do fan
+  // Controle da lâmpada (HIGH = ON, LOW = OFF) por modo
+  float tMax = T_SECA_DESLIGA;  // default
+  float tMin = T_SECA_LIGA;
   switch (modoAtual) {
     case SECAGEM:
-      if (lampadaLigada && temp >= T_SECA_DESLIGA) {
-        digitalWrite(RELE_PIN, LOW);
-        lampadaLigada = false;
-      }
-      else if (!lampadaLigada && temp < T_SECA_LIGA) {
-        digitalWrite(RELE_PIN, HIGH);
-        lampadaLigada = true;
-      }
-      analogWrite(FAN_PIN, 180);
-      break;
-
+      tMin = T_SECA_LIGA;     tMax = T_SECA_DESLIGA;  break;
     case ECONOMIA:
-      if (lampadaLigada && temp >= T_DORME_DESLIGA) {
-        digitalWrite(RELE_PIN, LOW);
-        lampadaLigada = false;
-      }
-      else if (!lampadaLigada && temp < T_DORME_LIGA) {
-        digitalWrite(RELE_PIN, HIGH);
-        lampadaLigada = true;
-      }
-      analogWrite(FAN_PIN, 80);
-      break;
-
+      tMin = T_DORME_LIGA;    tMax = T_DORME_DESLIGA; break;
     case VENTILA:
-      if (lampadaLigada && temp >= T_VENT_DESLIGA) {
-        digitalWrite(RELE_PIN, LOW);
-        lampadaLigada = false;
-      }
-      else if (!lampadaLigada && temp < T_VENT_LIGA) {
-        digitalWrite(RELE_PIN, HIGH);
-        lampadaLigada = true;
-      }
-      analogWrite(FAN_PIN, 255);
-      break;
+      tMin = T_VENT_LIGA;     tMax = T_VENT_DESLIGA;  break;
   }
 
-  // 5) exibição no LCD
+  if (lampadaLigada && temp >= tMax) {
+    digitalWrite(RELE_PIN, LOW);
+    lampadaLigada = false;
+  } else if (!lampadaLigada && temp < tMin) {
+    digitalWrite(RELE_PIN, HIGH);
+    lampadaLigada = true;
+  }
+
+  // FAN: acelera só quando a lâmpada está ON; senão usa FAN_IDLE_PWM
+  uint8_t fanPWM = lampadaLigada ? calcFanSpeed(temp, tMax) : FAN_IDLE_PWM;
+  analogWrite(FAN_PIN, fanPWM);
+
+  // Display
   static bool mostrarAbs = false;
   lcd.clear();
   lcd.setCursor(0,0);
@@ -154,7 +166,7 @@ void loop() {
   lcd.setCursor(0,1);
   lcd.print("T:");
   lcd.print(temp, 1);
-  lcd.write((uint8_t)223);
+  lcd.write((uint8_t)223);  // °
   lcd.print("C ");
   switch (modoAtual) {
     case SECAGEM:  lcd.print("SECA"); break;
