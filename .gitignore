@@ -1,0 +1,25 @@
+# Segredos (token do bot Telegram, chat_id, credenciais Wi-Fi)
+secrets.h
+*.secret
+credentials.h
+
+# Artefatos de build do Arduino / PlatformIO
+build/
+.build/
+*.hex
+*.elf
+*.bin
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+
+# Sistema operacional / Google Drive
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
