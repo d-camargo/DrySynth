@@ -307,15 +307,22 @@ BOOT/SELFTEST → IDLE → (SECAR | MANTER) → ...
    um repositório git; o remoto tem só `drysynth.ino`. Decidir estrutura (mover o
    sketch antigo, adicionar os `.md`) e fazer o primeiro commit. Ver conversa.
 
-## 12. Roadmap sugerido
+## 12. Roadmap
 
-1. **Hardware/segurança primeiro:** montar fonte, buck, MOSFET, fusível térmico,
-   termistor no bloco, isolar bloco do isopor. Validar com multímetro.
-2. **Bring-up do firmware:** leitura e calibração de todos os sensores (sem
-   aquecer). Confirmar termistor e DHTs.
-3. **Camada de segurança:** limites, runaway, sanidade, intertravamento, watchdog —
-   testar forçando falhas **antes** de confiar no aquecimento.
-4. **Controle:** aquecimento por temperatura de bloco; depois lógica de umidade e
-   ventilação inteligente.
-5. **IoT:** Wi-Fi, servidor web, alertas.
-6. **Ajuste fino:** PID se necessário, cooldown de alertas, persistência.
+Roadmap completo, fase a fase, com checklists e portões de segurança em
+[`ROADMAP.md`](ROADMAP.md). Resumo das fases:
+
+0. Preparação e aquisição (BOM)
+1. Alimentação na bancada (sem aquecer) ⚠️
+2. Montagem mecânica
+3. Bring-up do firmware: sensores (sem aquecer)
+4. **Camada de segurança** ⚠️ (pré-requisito de aquecer)
+5. Controle de aquecimento
+6. Controle por umidade + ventilação inteligente
+7. IoT: Wi-Fi e interface web
+8. Alertas via Telegram
+9. Validação de campo e ajuste fino
+10. Documentação e encerramento
+
+**Regra de ouro:** hardware/segurança antes de aquecer; a Fase 4 é pré-requisito
+absoluto da Fase 5.

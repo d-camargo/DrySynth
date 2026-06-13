@@ -2,9 +2,10 @@
 
 Guia para o Claude Code trabalhar neste projeto. Escreva código e comentários em **português** (o firmware atual já é assim).
 
-> **Desenho completo do projeto: ver [`PLANEJAMENTO.md`](PLANEJAMENTO.md)** — é a
-> fonte de verdade do que será construído e por quê. Este CLAUDE.md resume o
-> contexto e as convenções de trabalho.
+> **Desenho completo: [`PLANEJAMENTO.md`](PLANEJAMENTO.md)** (fonte de verdade do
+> que será construído e por quê) · **Plano de execução: [`ROADMAP.md`](ROADMAP.md)**
+> (fases, checklists e portões de segurança). Este CLAUDE.md resume o contexto e as
+> convenções de trabalho.
 
 ## O que é
 
