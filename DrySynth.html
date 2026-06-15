@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DrySynth — Visão do Projeto</title>
+<style>
+  :root{
+    --bg:#0f172a; --bg2:#1e293b; --card:#ffffff; --ink:#0f172a; --muted:#64748b;
+    --line:#e2e8f0; --soft:#f8fafc;
+    --green:#16a34a; --green-s:#dcfce7;
+    --amber:#d97706; --amber-s:#fef3c7;
+    --blue:#2563eb; --blue-s:#dbeafe;
+    --red:#dc2626; --red-s:#fee2e2;
+    --hot:#f97316; --cold:#0ea5e9; --vent:#94a3b8; --fresh:#22c55e;
+    --radius:16px; --shadow:0 10px 30px -12px rgba(2,6,23,.25);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:var(--ink);background:var(--soft);line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  /* HERO */
+  header.hero{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,#0e7490 100%);
+       color:#fff;padding:56px 0 64px;position:relative;overflow:hidden}
+  header.hero::after{content:"";position:absolute;inset:0;
+       background:radial-gradient(900px 300px at 80% -10%,rgba(255,255,255,.12),transparent)}
+  .hero .wrap{position:relative;z-index:1}
+  .brand{display:flex;align-items:center;gap:14px}
+  .logo{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#f97316,#fbbf24);
+       display:grid;place-items:center;font-size:24px;box-shadow:0 6px 18px rgba(249,115,22,.45)}
+  h1{font-size:38px;margin:0;letter-spacing:-.5px;font-weight:800}
+  .tag{color:#cbd5e1;font-size:18px;margin:10px 0 22px;max-width:680px}
+  .pills{display:flex;flex-wrap:wrap;gap:10px}
+  .pill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+        padding:7px 14px;border-radius:999px;font-size:13.5px;backdrop-filter:blur(4px)}
+  .pill b{color:#fff}
+
+  /* SECTIONS */
+  section{padding:46px 0}
+  section h2{font-size:26px;margin:0 0 6px;letter-spacing:-.3px}
+  section .sub{color:var(--muted);margin:0 0 26px;font-size:15.5px}
+  .eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:700;color:var(--blue);margin:0 0 8px}
+
+  /* SCHEMATIC */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+           box-shadow:var(--shadow);padding:18px;overflow:hidden}
+  .diagram svg{width:100%;height:auto;display:block}
+  .legend{display:flex;flex-wrap:wrap;gap:18px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+  .legend span{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;color:#334155}
+  .swatch{width:26px;height:0;border-top:4px solid #000;border-radius:4px}
+  .dashed{border-top-style:dashed}
+
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:22px}
+  .fact{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .fact .k{font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .fact .v{font-size:18px;font-weight:700;margin-top:4px}
+  .fact .v small{font-weight:500;color:var(--muted)}
+
+  /* TIERS */
+  .tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px}
+  .tier{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+        box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+  .tier .top{padding:18px 20px;color:#fff}
+  .tier.green .top{background:linear-gradient(135deg,#16a34a,#15803d)}
+  .tier.amber .top{background:linear-gradient(135deg,#f59e0b,#d97706)}
+  .tier.blue  .top{background:linear-gradient(135deg,#3b82f6,#2563eb)}
+  .tier .top .n{font-size:12px;opacity:.9;text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+  .tier .top h3{margin:4px 0 2px;font-size:20px}
+  .tier .top p{margin:0;font-size:13.5px;opacity:.95}
+  .tier .body{padding:16px 20px 20px;flex:1}
+  .tier ul{margin:0;padding:0;list-style:none}
+  .tier li{position:relative;padding:7px 0 7px 26px;font-size:14px;border-bottom:1px solid var(--soft)}
+  .tier li:last-child{border-bottom:none}
+  .tier li::before{content:"";position:absolute;left:2px;top:13px;width:12px;height:12px;border-radius:50%}
+  .tier.green li::before{background:var(--green-s);border:2px solid var(--green)}
+  .tier.amber li::before{background:var(--amber-s);border:2px solid var(--amber)}
+  .tier.blue  li::before{background:var(--blue-s);border:2px solid var(--blue)}
+  .tier .out{margin:14px 20px 18px;padding:12px 14px;border-radius:12px;font-size:13.5px;font-weight:600}
+  .tier.green .out{background:var(--green-s);color:#14532d}
+  .tier.amber .out{background:var(--amber-s);color:#7c2d12}
+  .tier.blue  .out{background:var(--blue-s);color:#1e3a8a}
+  .tier .out small{display:block;font-weight:500;opacity:.8;margin-top:3px}
+
+  /* TABLE */
+  .tbl{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  th,td{padding:11px 16px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:var(--bg2);color:#e2e8f0;font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}
+  tr:last-child td{border-bottom:none}
+  tr:nth-child(even) td{background:var(--soft)}
+  .have{color:var(--green);font-weight:700}
+  .buy{color:var(--amber);font-weight:700}
+
+  /* SAFETY */
+  .safety{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .scard{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--red);
+         border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+  .scard h4{margin:0 0 4px;font-size:15px}
+  .scard p{margin:0;font-size:13.5px;color:var(--muted)}
+
+  /* ROADMAP STRIP */
+  .road{display:flex;gap:8px;flex-wrap:wrap}
+  .ph{flex:1;min-width:78px;background:var(--card);border:1px solid var(--line);border-radius:12px;
+      padding:12px 10px;text-align:center;box-shadow:var(--shadow)}
+  .ph .num{font-size:20px;font-weight:800}
+  .ph .lbl{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.3}
+  .ph.g{border-top:4px solid var(--green)}
+  .ph.a{border-top:4px solid var(--amber)}
+  .ph.b{border-top:4px solid var(--blue)}
+
+  footer{background:var(--bg);color:#94a3b8;padding:30px 0;font-size:14px}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center}
+  footer a{color:#cbd5e1}
+  .docs{display:flex;gap:10px;flex-wrap:wrap}
+  .docs a{background:var(--bg2);padding:8px 14px;border-radius:10px;border:1px solid #334155}
+  .note{font-size:12.5px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo">🌡️</div>
+      <h1>DrySynth</h1>
+    </div>
+    <p class="tag">Caixa de secagem e armazenamento de filamento 3D — aquecimento controlado por
+    cartucho cerâmico, recirculação de ar e monitoramento pelo celular (ESP8266 / Wi-Fi).</p>
+    <div class="pills">
+      <span class="pill">Plataforma <b>ESP8266 NodeMCU</b></span>
+      <span class="pill">Aquecedor <b>cartucho K1 24V/60W</b></span>
+      <span class="pill">Filamentos <b>PLA / PETG (~50&nbsp;°C)</b></span>
+      <span class="pill">Controle por <b>umidade</b></span>
+      <span class="pill">Interface <b>web + alertas Telegram</b></span>
+    </div>
+  </div>
+</header>
+
+<!-- CONCEITO MECÂNICO -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Conceito mecânico</p>
+    <h2>Bloco de aquecimento FORA da caixa + recirculação</h2>
+    <p class="sub">A caixa é pequena: o bloco quente vai para uma <b>câmara externa</b>, e o ar da
+    caixa <b>recircula</b> por ela passando pelo bloco. Insuflação em cima, retorno embaixo (a favor
+    da convecção). Detalhes em <code>MECANICA.md</code>.</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 920 470" role="img" aria-label="Diagrama do fluxo de ar do DrySynth">
+        <defs>
+          <marker id="aHot" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L7,3 L0,6 Z" fill="#f97316"/></marker>
+          <marker id="aCold" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L7,3 L0,6 Z" fill="#0ea5e9"/></marker>
+          <marker id="aVent" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L7,3 L0,6 Z" fill="#94a3b8"/></marker>
+          <marker id="aFresh" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L7,3 L0,6 Z" fill="#22c55e"/></marker>
+        </defs>
+
+        <!-- CAIXA TÉRMICA -->
+        <rect x="400" y="70" width="450" height="330" rx="16" fill="#eef2ff" stroke="#c7d2fe" stroke-width="2"/>
+        <text x="625" y="58" text-anchor="middle" font-size="15" font-weight="700" fill="#3730a3">CAIXA TÉRMICA</text>
+        <text x="625" y="392" text-anchor="middle" font-size="11.5" fill="#6366f1">não 100% vedada — respira pela tampa</text>
+        <!-- filamento -->
+        <g opacity="0.85">
+          <circle cx="600" cy="250" r="46" fill="#fff" stroke="#a5b4fc" stroke-width="6"/>
+          <circle cx="600" cy="250" r="14" fill="#e0e7ff"/>
+          <circle cx="715" cy="290" r="40" fill="#fff" stroke="#a5b4fc" stroke-width="6"/>
+          <circle cx="715" cy="290" r="12" fill="#e0e7ff"/>
+          <text x="660" y="345" text-anchor="middle" font-size="11.5" fill="#6366f1">filamento</text>
+        </g>
+
+        <!-- CÂMARA EXTERNA -->
+        <rect x="95" y="120" width="210" height="250" rx="12" fill="#fff7ed" stroke="#fed7aa" stroke-width="2"/>
+        <text x="200" y="108" text-anchor="middle" font-size="15" font-weight="700" fill="#9a3412">CÂMARA EXTERNA</text>
+        <text x="200" y="356" text-anchor="middle" font-size="10.5" fill="#c2410c">ABS + fibra de vidro FM260FV</text>
+        <!-- bloco -->
+        <rect x="125" y="165" width="120" height="78" rx="8" fill="#fde68a" stroke="#f59e0b" stroke-width="2"/>
+        <text x="185" y="198" text-anchor="middle" font-size="12.5" font-weight="700" fill="#78350f">BLOCO Al</text>
+        <text x="185" y="216" text-anchor="middle" font-size="10" fill="#92400e">cartucho 60W</text>
+        <text x="185" y="230" text-anchor="middle" font-size="10" fill="#92400e">+ termistor</text>
+
+        <!-- FAN no acoplamento -->
+        <g>
+          <circle cx="352" cy="195" r="36" fill="#f1f5f9" stroke="#475569" stroke-width="2"/>
+          <g stroke="#475569" stroke-width="2.4" fill="none">
+            <path d="M352,195 C340,178 360,170 352,160"/>
+            <path d="M352,195 C369,205 374,184 384,190"/>
+            <path d="M352,195 C336,206 332,188 322,196"/>
+            <path d="M352,195 C362,210 343,217 350,228"/>
+          </g>
+          <circle cx="352" cy="195" r="6" fill="#475569"/>
+          <text x="352" y="250" text-anchor="middle" font-size="11.5" font-weight="700" fill="#334155">FAN 80×80</text>
+        </g>
+
+        <!-- INSUFLAÇÃO (hot) fan -> caixa -->
+        <path d="M388,188 L545,165" fill="none" stroke="#f97316" stroke-width="5" marker-end="url(#aHot)"/>
+        <text x="470" y="150" text-anchor="middle" font-size="11.5" font-weight="700" fill="#ea580c">ar quente (insuflação)</text>
+
+        <!-- RETORNO (cold) caixa bottom -> câmara bottom -->
+        <path d="M470,400 L470,440 L200,440 L200,372" fill="none" stroke="#0ea5e9" stroke-width="5"
+              stroke-linejoin="round" marker-end="url(#aCold)"/>
+        <text x="335" y="458" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0284c7">retorno do ar &nbsp;·&nbsp; duto Ø60mm (~10cm)</text>
+        <circle cx="470" cy="400" r="5" fill="#0ea5e9"/>
+        <text x="470" y="420" text-anchor="middle" font-size="10" fill="#0369a1">furo de baixo</text>
+
+        <!-- SAÍDA: aba passiva unidirecional -->
+        <rect x="585" y="56" width="46" height="14" rx="3" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
+        <path d="M608,55 L608,18" fill="none" stroke="#94a3b8" stroke-width="4" marker-end="url(#aVent)"/>
+        <text x="712" y="27" text-anchor="middle" font-size="11" font-weight="700" fill="#64748b">saída — aba passiva</text>
+        <text x="712" y="41" text-anchor="middle" font-size="10" fill="#94a3b8">(check, abre na purga)</text>
+
+        <!-- ENTRADA de ar novo + SERVO (Etapa Final) -->
+        <path d="M40,250 L93,250" fill="none" stroke="#22c55e" stroke-width="4" stroke-dasharray="7 5" marker-end="url(#aFresh)"/>
+        <text x="38" y="238" font-size="10.5" font-weight="700" fill="#15803d">entrada ar novo</text>
+        <text x="38" y="275" font-size="9.5" fill="#16a34a">+ SERVO (Etapa Final)</text>
+      </svg>
+
+      <div class="legend">
+        <span><i class="swatch" style="border-color:var(--hot)"></i> Insuflação (ar quente)</span>
+        <span><i class="swatch" style="border-color:var(--cold)"></i> Retorno / recirculação (Ø60)</span>
+        <span><i class="swatch" style="border-color:var(--vent)"></i> Saída — aba passiva (check)</span>
+        <span><i class="swatch dashed" style="border-color:var(--fresh)"></i> Entrada ar novo + servo — Etapa Final</span>
+      </div>
+    </div>
+
+    <div class="facts">
+      <div class="fact"><div class="k">Câmara externa</div><div class="v">~10×10 cm<br><small>ABS + FM260FV (~500 °C)</small></div></div>
+      <div class="fact"><div class="k">Duto de retorno</div><div class="v">Ø60 mm<br><small>~10 cm · PETG/ASA</small></div></div>
+      <div class="fact"><div class="k">Acoplamento</div><div class="v">~80 mm<br><small>aloja o fan 80×80</small></div></div>
+      <div class="fact"><div class="k">Alvo de ar</div><div class="v">~50 °C<br><small>PLA/PETG</small></div></div>
+      <div class="fact"><div class="k">Desumidificação</div><div class="v">Sílica + purga<br><small>passiva → servo (final)</small></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPAS DE ENTREGA -->
+<section style="background:linear-gradient(180deg,#fff,#f1f5f9)">
+  <div class="wrap">
+    <p class="eyebrow">Priorização por prazo</p>
+    <h2>Três etapas de entrega</h2>
+    <p class="sub">Há pressa: o projeto é dividido em entregas incrementais, cada uma já utilizável.
+    A <b>camada de segurança é obrigatória já na Essencial</b> — não existe versão rápida que ligue o
+    aquecedor sem ela.</p>
+
+    <div class="tiers">
+      <!-- ESSENCIAL -->
+      <div class="tier green">
+        <div class="top">
+          <div class="n">🟢 Etapa 1 · Essencial</div>
+          <h3>“Seca e é seguro” (MVP)</h3>
+          <p>Aquece, recircula e seca com segurança — mesmo que menos eficiente.</p>
+        </div>
+        <div class="body">
+          <ul>
+            <li>Câmara externa + duto Ø60 + fan; bloco isolado em standoff</li>
+            <li>Energia 24V + bucks (5V/12V), GND comum, fusíveis</li>
+            <li>Termistor + <b>1× DHT22</b>; aquecimento por temp. do bloco (histerese + duty)</li>
+            <li>Cooler recircula + intertravamento (não aquece sem fan)</li>
+            <li><b>Camada de segurança completa</b> (fusível térmico, runaway, watchdog, FALHA travada)</li>
+            <li>Umidade: passiva (caixa não vedada) + <b>sílica gel</b></li>
+            <li>Interface mínima (serial/web só-leitura)</li>
+          </ul>
+        </div>
+        <div class="out">➡️ Seca PLA/PETG com segurança.<small>Cobre ROADMAP fases 0–5</small></div>
+      </div>
+
+      <!-- MÉDIA -->
+      <div class="tier amber">
+        <div class="top">
+          <div class="n">🟡 Etapa 2 · Média</div>
+          <h3>Controle por umidade + celular</h3>
+          <p>Vira produto controlado por umidade e monitorável.</p>
+        </div>
+        <div class="body">
+          <ul>
+            <li>Sensores completos: 2º DHT22 + DHT11 externo</li>
+            <li>Controle por <b>umidade-alvo</b> → setpoint de temperatura</li>
+            <li>Modos Secar / Manter / Desligado + <b>detecção de platô</b></li>
+            <li>Wi-Fi + <b>servidor web</b> (status + controle pelo celular)</li>
+            <li>Persistência de config na flash</li>
+            <li><b>Alertas Telegram</b> (não-bloqueantes, com cooldown)</li>
+          </ul>
+        </div>
+        <div class="out">➡️ Controlado por umidade e ajustável pelo celular.<small>Cobre ROADMAP fases 7–8 + parte da 6</small></div>
+      </div>
+
+      <!-- FINAL -->
+      <div class="tier blue">
+        <div class="top">
+          <div class="n">🔵 Etapa 3 · Final</div>
+          <h3>Eficiência e autonomia</h3>
+          <p>Ventilação inteligente e refino do controle.</p>
+        </div>
+        <div class="body">
+          <ul>
+            <li><b>Servo SG90 na entrada de ar novo</b> + <b>aba passiva</b> na saída → purga forçada</li>
+            <li>Purga por umidade absoluta (DHT11 &lt; DHT22)</li>
+            <li>Recirculação selada quando o servo fecha a entrada</li>
+            <li><b>PID</b> no bloco (se houver overshoot) + OTA</li>
+            <li>Calibração de campo, teste de longa duração</li>
+            <li>Ajuste de margens/cooldowns; UR mínima realista</li>
+          </ul>
+        </div>
+        <div class="out">➡️ Secagem mais eficiente e autônoma.<small>Cobre ROADMAP fase 6 (ventilação) + 9–10</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOM -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Lista de materiais</p>
+    <h2>BOM</h2>
+    <p class="sub"><span class="have">●</span> já tem &nbsp;·&nbsp; <span class="buy">●</span> adquirir</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Item</th><th>Qtd</th><th>Status</th><th>Observação</th></tr></thead>
+        <tbody>
+          <tr><td>ESP8266 NodeMCU</td><td>1</td><td class="have">tem</td><td>placa principal (A0 c/ divisor on-board)</td></tr>
+          <tr><td>Cartucho cerâmico K1 24V/60W</td><td>1</td><td class="have">tem</td><td>aquecedor (~2,5 A)</td></tr>
+          <tr><td>Bloco de alumínio do hotend</td><td>1</td><td class="have">tem</td><td>espalha o calor</td></tr>
+          <tr><td>Termistor 100K NTC (~3950)</td><td>1</td><td class="have">tem</td><td>no bloco (2º reserva)</td></tr>
+          <tr><td>DHT22 (interno) / DHT11 (externo)</td><td>2 / 1</td><td class="have">tem</td><td>ar interno + referência externa</td></tr>
+          <tr><td>Cooler 80×80 (12V)</td><td>1</td><td class="have">tem</td><td>recirculação</td></tr>
+          <tr><td>Servo SG90</td><td>1</td><td class="have">tem</td><td>aba de purga — Etapa Final</td></tr>
+          <tr><td>Fonte 24V (≥3 A)</td><td>1</td><td class="have">tem</td><td>—</td></tr>
+          <tr><td>MOSFET aquecedor (IRLZ44N / módulo)</td><td>1</td><td class="buy">comprar</td><td>low-side, PWM</td></tr>
+          <tr><td>MOSFET/driver do cooler</td><td>1</td><td class="buy">comprar</td><td>se o fan não tiver controle</td></tr>
+          <tr><td>Buck 24V→12V e 24V→5V</td><td>2</td><td class="buy">comprar</td><td>cooler / NodeMCU+servo</td></tr>
+          <tr><td>Fusível térmico ~100 °C</td><td>1</td><td class="buy">comprar</td><td>segurança física no bloco</td></tr>
+          <tr><td>Fusível de corrente (linha 24V)</td><td>1</td><td class="buy">comprar</td><td>segurança</td></tr>
+          <tr><td>Câmara: ABS + tecido FM260FV</td><td>—</td><td class="buy">comprar</td><td>abriga o bloco (~500 °C)</td></tr>
+          <tr><td>Duto Ø60 (impresso PETG/ASA)</td><td>1</td><td class="buy">imprimir</td><td>retorno do ar (~10 cm)</td></tr>
+          <tr><td>Standoffs metálicos + pasta térmica</td><td>—</td><td class="buy">comprar</td><td>bloco não toca a parede</td></tr>
+          <tr><td>Gaxeta/espuma EPDM + sílica gel</td><td>—</td><td class="buy">comprar</td><td>vedação + desumidificante</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SEGURANÇA -->
+<section style="background:#fff">
+  <div class="wrap">
+    <p class="eyebrow" style="color:var(--red)">Crítico — 60W em caixa de isopor/plástico</p>
+    <h2>Camada de segurança</h2>
+    <p class="sub">Obrigatória já na Etapa Essencial. Independente do Wi-Fi — a rede é best-effort e
+    nunca pode travar/atrasar a segurança.</p>
+    <div class="safety">
+      <div class="scard"><h4>🔥 Fusível térmico (~100 °C)</h4><p>No bloco. Corta mesmo se o ESP travar ou o MOSFET ficar em curto. Rede física independente.</p></div>
+      <div class="scard"><h4>🌡️ Limites de temperatura</h4><p>Bloco (termistor) e ar (DHT22) com teto → desliga e trava em FALHA (exige reset).</p></div>
+      <div class="scard"><h4>📈 Thermal runaway</h4><p>Comandou aquecer e o bloco não sobe no tempo esperado → termistor solto / MOSFET → corta.</p></div>
+      <div class="scard"><h4>🔌 Sanidade de sensor</h4><p>Fora de faixa / NaN / curto / aberto / divergência entre DHTs → corta.</p></div>
+      <div class="scard"><h4>🌀 Intertravamento fan↔heater</h4><p>Não aquece com o cooler parado — o fluxo tira o calor do bloco e evita ponto quente.</p></div>
+      <div class="scard"><h4>🛡️ Watchdog + boot seguro</h4><p>Aquecedor OFF até medir e validar sensores. Bloco isolado, nunca encosta no ABS/isopor.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP STRIP -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Execução</p>
+    <h2>Roadmap em 11 fases</h2>
+    <p class="sub">Hardware/segurança antes de aquecer. A Fase 4 (segurança) é pré-requisito absoluto
+    da Fase 5 (aquecer). Cores = etapa de entrega.</p>
+    <div class="road">
+      <div class="ph g"><div class="num">0</div><div class="lbl">Aquisição</div></div>
+      <div class="ph g"><div class="num">1</div><div class="lbl">Energia ⚠️</div></div>
+      <div class="ph g"><div class="num">2</div><div class="lbl">Mecânica</div></div>
+      <div class="ph g"><div class="num">3</div><div class="lbl">Sensores</div></div>
+      <div class="ph g"><div class="num">4</div><div class="lbl">Segurança ⚠️</div></div>
+      <div class="ph g"><div class="num">5</div><div class="lbl">Aquecer</div></div>
+      <div class="ph b"><div class="num">6</div><div class="lbl">Umidade + ventilação</div></div>
+      <div class="ph a"><div class="num">7</div><div class="lbl">Wi-Fi / web</div></div>
+      <div class="ph a"><div class="num">8</div><div class="lbl">Telegram</div></div>
+      <div class="ph b"><div class="num">9</div><div class="lbl">Campo</div></div>
+      <div class="ph b"><div class="num">10</div><div class="lbl">Docs</div></div>
+    </div>
+    <p class="note">🟢 Essencial &nbsp; 🟡 Média &nbsp; 🔵 Final — a Fase 6 se divide: ventilação (servo) é Final; base de umidade entra na Média.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <strong style="color:#fff">DrySynth</strong> — documento gerado a partir do planejamento do projeto.
+      <div class="note">Fontes de verdade no repositório (markdown). Este HTML é só visualização.</div>
+    </div>
+    <div class="docs">
+      <a href="PLANEJAMENTO.md">📄 PLANEJAMENTO.md</a>
+      <a href="MECANICA.md">⚙️ MECANICA.md</a>
+      <a href="ROADMAP.md">🗺️ ROADMAP.md</a>
+      <a href="CLAUDE.md">🤖 CLAUDE.md</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
